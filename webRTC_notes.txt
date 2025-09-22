@@ -1,0 +1,108 @@
+WebRTC — Notes
+==============
+
+1) Short definition
+-------------------
+WebRTC (Web Real-Time Communications) is a set of browser-native APIs
+and protocols that allow real-time, low-latency, secure exchange of
+audio, video, and arbitrary data between peers (browsers or native apps)
+without plugins. It supports peer-to-peer and server-assisted topologies.
+
+2) Plain-English summary
+------------------------
+Think of WebRTC like a browser-based phone call:
+- Each peer captures mic/camera.
+- They exchange connection info (signaling) to discover how to reach
+  one another.
+- They negotiate codecs and encryption keys.
+- Media/data flows directly, or via a relay if direct connection isn't
+  possible.
+
+3) How it works — Step by step (engineer view)
+-----------------------------------------------
+1. Capture
+   - navigator.mediaDevices.getUserMedia() to capture camera/mic
+     (MediaStream).
+
+2. Signaling (out-of-band)
+   - SDP offers/answers and ICE candidates are exchanged via a signaling
+     channel (WebSocket, HTTP, Firebase, etc.). WebRTC does not define
+     the signaling transport — you implement it.
+
+3. Offer / Answer
+   - Peer A: createOffer() → setLocalDescription() → send SDP to Peer B.
+   - Peer B: setRemoteDescription() → createAnswer() → setLocalDescription()
+     → send answer back.
+
+4. ICE / NAT traversal
+   - ICE gathers local candidate endpoints.
+   - STUN servers help discover public IP/port.
+   - TURN servers relay media when direct peer-to-peer fails.
+
+5. DTLS & SRTP (security)
+   - DTLS negotiates keys; SRTP encrypts audio/video by default.
+
+6. Media & Data channels
+   - RTCPeerConnection carries media (RTP/SRTP).
+   - RTCDataChannel (SCTP) carries arbitrary data (ordered/unordered).
+
+7. Topologies
+   - 1:1 — P2P preferred (with TURN fallback).
+   - Multi-party — use an SFU (selective forwarding unit) or MCU to
+     scale, record, or mix streams.
+
+4) Key APIs & protocols
+-----------------------
+- Browser APIs: getUserMedia, RTCPeerConnection, RTCDataChannel,
+  MediaStream, MediaRecorder.
+- Protocols: SDP (signaling format), ICE (candidates), STUN, TURN,
+  DTLS, SRTP, SCTP (for data channels).
+- Supporting servers: Signaling server, STUN server, TURN server,
+  SFU/MCU (optional for scale/recording).
+
+5) Minimal JavaScript flow (example)
+------------------------------------
+/* Basic flow — signaling layer not shown */
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: true, video: true
+});
+const pc = new RTCPeerConnection({
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+});
+// Add local tracks
+stream.getTracks().forEach(t => pc.addTrack(t, stream));
+// Attach remote stream
+pc.ontrack = (e) => { remoteVideo.srcObject = e.streams[0]; };
+// Send ICE candidates via signaling
+pc.onicecandidate = (e) => sendSignaling({ type: "ice", candidate: e.candidate });
+// Create offer
+const offer = await pc.createOffer();
+await pc.setLocalDescription(offer);
+sendSignaling({ type: "offer", sdp: offer.sdp });
+
+(Note: the other peer must handle incoming 'offer', setRemoteDescription,
+createAnswer(), setLocalDescription(), and send the 'answer' back.)
+
+6) Real industry use cases
+--------------------------
+- 1:1 video calls (telehealth, click-to-call support).
+- Group video conferencing (SFU-based: mediasoup, Janus, Jitsi).
+- Live low-latency streaming (auctions, interactive streams).
+- Multiplayer games and synchronized data (RTCDataChannel).
+- IoT camera monitoring and remote control.
+
+7) Quick rule-of-thumb
+----------------------
+- 1:1 calls: P2P + STUN; always provide TURN as fallback.
+- Group calls/recording: Use an SFU; consider server recording or MCU if mixing is needed.
+
+8) References / terms to read next (recommended)
+-------------------------------------------------
+- SDP (Session Description Protocol)
+- ICE (Interactive Connectivity Establishment)
+- STUN vs TURN
+- DTLS and SRTP
+- SFU vs MCU vs P2P
+- Browser compatibility notes (Chrome, Firefox, Safari)
+
+
