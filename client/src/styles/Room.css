@@ -1,42 +1,86 @@
+/* Overall container background */
 .room-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #eef2f7;
+  min-height: 100vh;
+  padding: 40px;
+  background-color: #f9f9f9;
   font-family: Arial, sans-serif;
+  color: #333;
 }
 
+/* Card styling */
 .room-card {
-  background: #fff;
+  background-color: #fff;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
   text-align: center;
-  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
+/* Headings */
 .room-card h1 {
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
   color: #333;
 }
 
 .room-card h4 {
-  margin-bottom: 1.5rem;
+  font-size: 1rem;
   color: #555;
+  margin-bottom: 15px;
 }
 
-.call-btn {
-  background-color: #4cafef;
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+/* Buttons - general styling to match LobbyScreen */
+.room-card button {
+  padding: 10px 15px;
   font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   transition: background 0.2s ease-in-out;
+  color: #fff;
+  background-color: #007bff;
+}
+
+.room-card button:hover {
+  background-color: #0056b3;
+}
+
+/* Call button (slightly distinct for emphasis) */
+.call-btn {
+  background-color: #28a745;
 }
 
 .call-btn:hover {
-  background-color: #3a8cd5;
+  background-color: #1e7e34;
+}
+
+/* Video elements styling */
+.room-card video {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #000;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+/* Section titles for videos */
+.room-card h1.video-title {
+  font-size: 1.2rem;
+  margin: 5px 0;
+  color: #333;
+}
+
+/* Adjust button spacing */
+.room-card button + button {
+  margin-top: 10px;
 }

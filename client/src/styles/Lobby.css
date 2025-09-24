@@ -1,20 +1,35 @@
 /* Overall container background */
 .lobby-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   padding: 40px;
   background-color: #f9f9f9;
   font-family: Arial, sans-serif;
   color: #333;
 }
 
-/* Form styling */
+/* Form card styling */
 .lobby-card {
-  max-width: 500px;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
 }
 
 /* Heading */
 .lobby-card h1 {
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
 }
 
 /* Labels */
@@ -22,37 +37,50 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  font-size: 0.95rem;
+  color: #333;
 }
 
 /* Inputs */
 .lobby-card input {
   width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 15px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
   box-sizing: border-box;
+  transition: border-color 0.2s ease-in-out;
 }
 
-/* Focus state */
+/* Input focus state */
 .lobby-card input:focus {
   border-color: #007bff;
   outline: none;
 }
 
-/* Button */
+/* Buttons */
 .lobby-card button {
   padding: 10px 15px;
   font-size: 1rem;
   color: #fff;
   background-color: #007bff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  margin-top: 5px;
 }
 
 /* Button hover effect */
 .lobby-card button:hover {
   background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+  .lobby-card {
+    padding: 1.5rem;
+    width: 100%;
+  }
 }

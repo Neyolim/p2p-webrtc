@@ -7,32 +7,44 @@ const io = new Server(8000, {
   },
 });
 
+// Maps for tracking who is who
 const emailToSocketIdMap = new Map();
-const socketidToEmailMap = new Map();
+const socketIdToEmailMap = new Map();
 
 io.on("connection", (socket) => {
-  console.log(`Socket Connected`, socket.id);
+  console.log(`Socket Connected: ${socket.id}`);
 
-  socket.on("room:join", (data) => {
-    const { email, room } = data;
-
+  // User joins a room
+  socket.on("room:join", ({ email, room }) => {
     emailToSocketIdMap.set(email, socket.id);
-    socketidToEmailMap.set(socket.id, email);
+    socketIdToEmailMap.set(socket.id, email);
 
-    socket.join(room); // join first
+    socket.join(room);
 
-    // Notify other users in the room that someone joined
+    // Notify other users in the room
     socket.to(room).emit("user:joined", { email, id: socket.id });
 
-    // Notify the user themselves that they joined
-    io.to(socket.id).emit("room:join", data);
+    // Confirm join to the user
+    io.to(socket.id).emit("room:join", { email, room });
   });
 
+  // Caller sends an offer
   socket.on("user:call", ({ to, offer }) => {
     io.to(to).emit("incoming:call", { from: socket.id, offer });
   });
 
+  // Callee accepts with answer
   socket.on("call:accepted", ({ to, ans }) => {
-    io.to(to).emit("call:accepted", { from: socket.id, offer });
+    io.to(to).emit("call:accepted", { from: socket.id, ans });
+  });
+
+  // Negotiation needed (renegotiation offer)
+  socket.on("peer:nego:needed", ({ to, offer }) => {
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
+  });
+
+  // Negotiation final (answer)
+  socket.on("peer:nego:done", ({ to, ans }) => {
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
 });
